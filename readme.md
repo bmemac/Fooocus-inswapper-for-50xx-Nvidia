@@ -5,7 +5,8 @@ This is a fork of [Fooocus](https://github.com/lllyasviel/Fooocus).  This fork i
 * Insightface/[inswapper](https://github.com/haofanwang/inswapper) library used by roop, ReActor, and others
 * [PhotoMaker](https://github.com/TencentARC/PhotoMaker) based on `🤗 diffusers`
 * [InstantID](https://github.com/InstantID/InstantID) based on `🤗 diffusers`
-
+* Patched for 50xx Nvidia GPUs
+  
 The goal of this repository is to stay up-to-date with the main repository, while also maintaining the above integrations.
 
 For more detailed and official documentation, please refer to [lllyasviel's repository](https://github.com/lllyasviel/Fooocus).
@@ -14,12 +15,27 @@ A standalone installation does not exist for this repository.
 
 ## Installation (Windows)
 
-The installation assumes CUDA 11.8.  If you need a different version, please update `configure.bat` with the correct URL to the desired CUDA version.
+## Installation (Windows) - RTX 50-series (Blackwell) Compatible Fork
 
-1. [Ensure Microsoft Visual C++ Redistributable is installed](https://aka.ms/vs/17/release/vc_redist.x64.exe).
-2. [Enusre Microsoft Visual C++ Build Tools are installed](https://aka.ms/vs/17/release/vs_BuildTools.exe).  Install the Desktop workload.
-1. Run `git clone https://github.com/machineminded/Fooocus-inswapper.git`
-2. Execute `configure.bat`
+This fork has been updated to work with NVIDIA RTX 50-series GPUs (sm_120/Blackwell architecture) 
+and modern Python packages.
+
+### Prerequisites
+1. [Ensure Microsoft Visual C++ Redistributable is installed](https://aka.ms/vs/17/release/vc_redist.x64.exe)
+2. [Ensure Microsoft Visual C++ Build Tools are installed](https://aka.ms/vs/17/release/vs_BuildTools.exe). Install the Desktop workload.
+3. Python 3.10 installed and on your PATH
+4. Git installed
+
+### Setup
+1. `git clone https://github.com/bmemac/Fooocus-inswapper-for-50xx-Nvidia.git`
+2. `cd Fooocus-inswapper-for-50xx-Nvidia`
+3. Run `setup_rtx50.bat` — this will create the venv, install all dependencies with correct versions, clone CodeFormer, and apply all necessary patches automatically
+4. Run `run.bat` to launch
+
+### Notes
+- Requires CUDA 12.8 or newer driver
+- Tested on RTX 5060 Ti 16GB
+- Original repo: https://github.com/machineminded/Fooocus-inswapper
 
 ## Inswapper Usage
 
