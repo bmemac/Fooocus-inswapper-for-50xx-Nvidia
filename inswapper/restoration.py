@@ -9,10 +9,15 @@ from torchvision.transforms.functional import normalize
 
 from basicsr.utils import imwrite, img2tensor, tensor2img
 from basicsr.utils.download_util import load_file_from_url
-from facelib.utils.face_restoration_helper import FaceRestoreHelper
-from facelib.utils.misc import is_gray
+from facexlib.utils.face_restoration_helper import FaceRestoreHelper
+def is_gray(img, threshold=10):
+    if len(img.shape) == 2:
+        return True
+    b, g, r = img[:,:,0], img[:,:,1], img[:,:,2]
+    return (abs(int(b.mean()) - int(g.mean())) < threshold and 
+            abs(int(b.mean()) - int(r.mean())) < threshold)
 from basicsr.archs.rrdbnet_arch import RRDBNet
-from basicsr.utils.realesrgan_utils import RealESRGANer
+from realesrgan.utils import RealESRGANer
 from basicsr.utils.registry import ARCH_REGISTRY
 
 
@@ -26,10 +31,10 @@ def check_ckpts():
     # download weights
     if not os.path.exists('CodeFormer/CodeFormer/weights/CodeFormer/codeformer.pth'):
         load_file_from_url(url=pretrain_model_url['codeformer'], model_dir='CodeFormer/CodeFormer/weights/CodeFormer', progress=True, file_name=None)
-    if not os.path.exists('CodeFormer/CodeFormer/weights/facelib/detection_Resnet50_Final.pth'):
-        load_file_from_url(url=pretrain_model_url['detection'], model_dir='CodeFormer/CodeFormer/weights/facelib', progress=True, file_name=None)
-    if not os.path.exists('CodeFormer/CodeFormer/weights/facelib/parsing_parsenet.pth'):
-        load_file_from_url(url=pretrain_model_url['parsing'], model_dir='CodeFormer/CodeFormer/weights/facelib', progress=True, file_name=None)
+    if not os.path.exists('CodeFormer/CodeFormer/weights/facexlib/detection_Resnet50_Final.pth'):
+        load_file_from_url(url=pretrain_model_url['detection'], model_dir='CodeFormer/CodeFormer/weights/facexlib', progress=True, file_name=None)
+    if not os.path.exists('CodeFormer/CodeFormer/weights/facexlib/parsing_parsenet.pth'):
+        load_file_from_url(url=pretrain_model_url['parsing'], model_dir='CodeFormer/CodeFormer/weights/facexlib', progress=True, file_name=None)
     if not os.path.exists('CodeFormer/CodeFormer/weights/realesrgan/RealESRGAN_x2plus.pth'):
         load_file_from_url(url=pretrain_model_url['realesrgan'], model_dir='CodeFormer/CodeFormer/weights/realesrgan', progress=True, file_name=None)
     
@@ -144,12 +149,10 @@ def face_restoration(img, background_enhance, face_upsample, upscale, codeformer
             if face_upsample and face_upsampler is not None:
                 restored_img = face_helper.paste_faces_to_input_image(
                     upsample_img=bg_img,
-                    draw_box=draw_box,
-                    face_upsampler=face_upsampler,
                 )
             else:
                 restored_img = face_helper.paste_faces_to_input_image(
-                    upsample_img=bg_img, draw_box=draw_box
+                    upsample_img=bg_img,
                 )
 
         restored_img = cv2.cvtColor(restored_img, cv2.COLOR_BGR2RGB)

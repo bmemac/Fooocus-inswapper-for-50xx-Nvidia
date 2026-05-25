@@ -24,13 +24,21 @@ def perform_face_swap(images, inswapper_source_image, inswapper_source_image_ind
       upsampler = set_realesrgan()
       device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
       print(f"{device}")
-
-      codeformer_net = ARCH_REGISTRY.get("CodeFormer")(dim_embd=512,
-                                                        codebook_size=1024,
-                                                        n_head=8,
-                                                        n_layers=9,
-                                                        connect_list=["32", "64", "128", "256"],
-                                                      ).to(device)
+      
+      import sys
+      sys.path.insert(0, r"CodeFormer\CodeFormer\CodeFormerRepo")
+      import importlib.util
+      spec = importlib.util.spec_from_file_location("codeformer_arch", 
+      r"CodeFormer\CodeFormer\CodeFormerRepo\basicsr\archs\codeformer_arch.py")
+      mod = importlib.util.module_from_spec(spec)
+      spec.loader.exec_module(mod)
+      CodeFormerModel = mod.CodeFormer
+      codeformer_net = CodeFormerModel(dim_embd=512,
+                                 codebook_size=1024,
+                                 n_head=8,
+                                 n_layers=9,
+                                 connect_list=["32", "64", "128", "256"],
+                                 ).to(device)
       ckpt_path = "CodeFormer/CodeFormer/weights/CodeFormer/codeformer.pth"
       checkpoint = torch.load(ckpt_path)["params_ema"]
       codeformer_net.load_state_dict(checkpoint)
